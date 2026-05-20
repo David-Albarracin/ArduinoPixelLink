@@ -73,6 +73,7 @@ uint16_t imgPos = 0;
 String mensaje = "";
 unsigned long ultimoByteMs = 0;
 char bufDisplay[64] = "";
+bool showingImage = false;   // true mientras matriz muestra bitmap (no animar)
 
 // =====================================================================
 //  Corazón hardcodeado (24x20)
@@ -132,6 +133,7 @@ inline void drawPx(MD_MAX72XX *mx, uint8_t x, uint8_t y, bool on) {
 //  Helpers de pintado
 // =====================================================================
 void pintarCorazon() {
+  showingImage = true;
   display.displayReset();
   display.displayClear();
   MD_MAX72XX *mx = display.getGraphicObject();
@@ -153,6 +155,7 @@ void pintarCorazon() {
  * (8 px por byte, MSB primero, orden row-major).
  */
 void pintarImagen(const uint8_t *buf) {
+  showingImage = true;
   display.displayReset();
   display.displayClear();
   MD_MAX72XX *mx = display.getGraphicObject();
@@ -184,6 +187,7 @@ void pintarImagen(const uint8_t *buf) {
  * que sirve para identificar cualquier transformación.
  */
 void pintarTest() {
+  showingImage = true;
   display.displayReset();
   display.displayClear();
   MD_MAX72XX *mx = display.getGraphicObject();
@@ -249,6 +253,7 @@ void procesarComando() {
 
   mensaje.toCharArray(bufDisplay, sizeof(bufDisplay));
   mensaje = "";
+  showingImage = false;
   display.displayReset();
   display.displayClear();
   display.displayScroll(bufDisplay, PA_CENTER, PA_SCROLL_LEFT, 60);
@@ -296,7 +301,7 @@ void loop() {
     procesarComando();
   }
 
-  if (display.displayAnimate()) {
+  if (!showingImage && display.displayAnimate()) {
     display.displayReset();
   }
 }
